@@ -440,7 +440,7 @@ export class Screensaver extends Page {
             return;
         }
         const message = await this.getData(['time']);
-        this.log.info(`HandleTime   got message: ${JSON.stringify(message)}`);
+        this.log.info(`HandleTime got message: ${JSON.stringify(message)}`);
 
         if (message === null || !message.options.time[0]) {
             this.log.debug('HandleTime: no message, no time or panel is offline');
