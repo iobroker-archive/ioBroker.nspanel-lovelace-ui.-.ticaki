@@ -363,10 +363,12 @@ class Screensaver extends import_Page.Page {
     }
   };
   async HandleTime() {
+    this.log.info(`HandleTime called with infoIcon: ${this.infoIcon}`);
     if (this.basePanel.isOnline === false) {
       return;
     }
     const message = await this.getData(["time"]);
+    this.log.info(`HandleTime   got message: ${JSON.stringify(message)}`);
     if (message === null || !message.options.time[0]) {
       this.log.debug("HandleTime: no message, no time or panel is offline");
       return;
@@ -379,18 +381,23 @@ class Screensaver extends import_Page.Page {
     } else if (!icon && this.basePanel.info.nspanel.onlineVersion !== this.basePanel.info.nspanel.displayVersion) {
       icon = `~${import_icon_mapping.Icons.GetIcon("wrench-clock")}`;
     }
-    this.sendToPanel(`time~${message.options.time[0].split("~")[5]}${icon}`, false);
+    const msg = `time~${message.options.time[0].split("~")[5]}${icon}`;
+    this.log.info(`HandleTime   sending message: ${msg}`);
+    this.sendToPanel(msg, false);
   }
   async HandleDate() {
     if (this.basePanel.isOnline === false) {
       return;
     }
     const message = await this.getData(["date"]);
+    this.log.info(`HandleDate   got message: ${JSON.stringify(message)}`);
     if (message === null || !message.options.date[0]) {
       this.log.debug("HandleDate: no message, no date or panel is offline");
       return;
     }
-    this.sendToPanel(`date~${message.options.date[0].split("~")[5]}`, false);
+    const msg = `date~${message.options.date[0].split("~")[5]}`;
+    this.log.info(`HandleDate   sending message: ${msg}`);
+    this.sendToPanel(msg, false);
   }
   async HandleScreensaverStatusIcons() {
     var _a, _b, _c, _d;

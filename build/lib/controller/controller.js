@@ -103,6 +103,7 @@ class Controller extends Library.BaseClass {
       await this.statesControler.setInternalState("///time", currentTime, true);
       const currentTimeString = await this.getCurrentTimeString();
       await this.statesControler.setInternalState("///timeString", currentTimeString, true);
+      this.log.info(`Current time: ${currentTimeString} and currentTime: ${currentTime}`);
       await this.adapter.delay(10);
     } catch (e) {
       this.log.error(`minuteLoop error: ${e instanceof Error ? e.message : JSON.stringify(e)}`);
@@ -125,7 +126,7 @@ class Controller extends Library.BaseClass {
     const now = /* @__PURE__ */ new Date();
     const next = new Date(now);
     const hourNow = now.getHours();
-    next.setHours(now.getHours() + 1, 0, 4);
+    next.setHours(hourNow + 1, 0, 4);
     const diff = next.getTime() - now.getTime();
     try {
       if (hourNow === 0) {

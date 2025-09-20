@@ -2713,7 +2713,7 @@ export const textTemplates: TemplateItems = {
                     value: {
                         type: 'state',
                         role: '',
-                        regexp: /.icon$/,
+                        regexp: /\d\.icon$/,
                         mode: 'auto',
                         dp: '',
                         /**

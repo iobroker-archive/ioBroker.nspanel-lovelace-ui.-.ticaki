@@ -435,10 +435,12 @@ export class Screensaver extends Page {
         }
     };
     async HandleTime(): Promise<void> {
+        this.log.info(`HandleTime called with infoIcon: ${this.infoIcon}`);
         if (this.basePanel.isOnline === false) {
             return;
         }
         const message = await this.getData(['time']);
+        this.log.info(`HandleTime   got message: ${JSON.stringify(message)}`);
 
         if (message === null || !message.options.time[0]) {
             this.log.debug('HandleTime: no message, no time or panel is offline');
@@ -454,19 +456,23 @@ export class Screensaver extends Page {
             // only for newer firmwares
             icon = `~${Icons.GetIcon('wrench-clock')}`;
         }
-
-        this.sendToPanel(`time~${message.options.time[0].split('~')[5]}${icon}`, false);
+        const msg = `time~${message.options.time[0].split('~')[5]}${icon}`;
+        this.log.info(`HandleTime   sending message: ${msg}`);
+        this.sendToPanel(msg, false);
     }
     async HandleDate(): Promise<void> {
         if (this.basePanel.isOnline === false) {
             return;
         }
         const message = await this.getData(['date']);
+        this.log.info(`HandleDate   got message: ${JSON.stringify(message)}`);
         if (message === null || !message.options.date[0]) {
             this.log.debug('HandleDate: no message, no date or panel is offline');
             return;
         }
-        this.sendToPanel(`date~${message.options.date[0].split('~')[5]}`, false);
+        const msg = `date~${message.options.date[0].split('~')[5]}`;
+        this.log.info(`HandleDate   sending message: ${msg}`);
+        this.sendToPanel(msg, false);
     }
 
     async HandleScreensaverStatusIcons(): Promise<void> {
