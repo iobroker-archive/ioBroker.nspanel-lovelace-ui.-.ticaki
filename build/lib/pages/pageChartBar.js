@@ -26,6 +26,12 @@ class PageChartBar extends import_pageChart.PageChart {
   constructor(config, options) {
     super(config, options);
   }
+  /**
+   * Initialisiert die Balkendiagramm-Seite
+   * - Verarbeitet die Konfiguration (Auto-Modus über Enums oder dpInit)
+   * - Erstellt die Datenelemente
+   * - Prüft ob DB-Details vorhanden sind und setzt ggf. die DB-Datenabruf-Methode
+   */
   async init() {
     const config = structuredClone(this.config);
     const tempConfig = this.enums || this.dpInit ? await this.basePanel.statesControler.getDataItemsFromAuto(this.dpInit, config, void 0, this.enums) : config;
@@ -47,7 +53,14 @@ class PageChartBar extends import_pageChart.PageChart {
     }
     await super.init();
   }
-  // Eventuelles überschreiben der getChartData-Methode
+  /**
+   * Holt Diagrammdaten aus der Datenbank und bereitet sie für die Darstellung auf
+   * Überschreibt die Standard-Methode aus PageChart für den Fall, dass DB-Details konfiguriert sind
+   *
+   * @param ticksChart - Array für die Y-Achsen-Beschriftung (Standard: ['~'])
+   * @param valuesChart - String mit den Diagrammwerten (Standard: '~')
+   * @returns Objekt mit ticksChart (Y-Achsen-Ticks) und valuesChart (Datenpunkte mit optionalen Zeitangaben)
+   */
   async getChartDataDB(ticksChart = ["~"], valuesChart = "~") {
     if (this.dbDetails) {
       const items = this.dbDetails;
@@ -61,7 +74,6 @@ class PageChartBar extends import_pageChart.PageChart {
         const dbDaten = await this.getDataFromDB(stateValue, rangeHours, instance);
         if (dbDaten && Array.isArray(dbDaten) && dbDaten.length > 0) {
           this.log.debug(`Data from DB: ${JSON.stringify(dbDaten)}`);
-          const stepXAchsis = rangeHours / maxXAxisLabels;
           valuesChart = "";
           for (let i = 0; i < rangeHours; i++) {
             const deltaHour = rangeHours - i;
@@ -71,7 +83,7 @@ class PageChartBar extends import_pageChart.PageChart {
               const value = Math.round(dbDaten[j].val / factor * 10);
               tempScale.push(value);
               if (valueDate > targetDate) {
-                if (targetDate.getHours() % stepXAchsis == 0) {
+                if (targetDate.getHours() % maxXAxisLabels == 0) {
                   valuesChart += `${targetValue}^${targetDate.getHours()}:00~`;
                 } else {
                   valuesChart += `${targetValue}~`;
@@ -85,7 +97,8 @@ class PageChartBar extends import_pageChart.PageChart {
           valuesChart = valuesChart.substring(0, valuesChart.length - 1);
           const max = Math.max(...tempScale);
           const min = 0;
-          const intervall = Math.max(Number(((max - min) / 5).toFixed()), 10);
+          const fixIntervall = max > 50 ? 10 : max > 20 ? 5 : 2;
+          const intervall = Math.max(Number(((max - min) / 5).toFixed()), fixIntervall);
           this.log.debug(`Scale Min: ${min}, Max: ${max} Intervall: ${intervall}`);
           const tempTickChart = [];
           let currentTick = min;
@@ -93,6 +106,7 @@ class PageChartBar extends import_pageChart.PageChart {
             tempTickChart.push(String(currentTick));
             currentTick += intervall;
           }
+          tempTickChart.push(String(currentTick));
           ticksChart = tempTickChart;
         } else {
           this.log.warn(`No data found for state ${stateValue} in the last ${rangeHours} hours`);
