@@ -66,7 +66,7 @@ export class PageChartLine extends PageChart {
 
                     const ticksAndLabelsList = [];
                     const date = new Date();
-                    date.setMinutes(0, 0, 0);
+                    date.setSeconds(0, 0);
                     const ts = Math.round(date.getTime() / 1000);
                     const tsYesterday = ts - hoursRangeFromNow * 3600;
 
@@ -83,6 +83,7 @@ export class PageChartLine extends PageChart {
                             ticksAndLabelsList.push(`${String(i)}^${formattedTime}`);
                         }
                     }
+                    ticksAndLabelsList.push(String(maxX));
                     ticksAndLabels = ticksAndLabelsList.join('+');
 
                     const list = [];
@@ -98,6 +99,7 @@ export class PageChartLine extends PageChart {
                         }
                     }
 
+                    list.pop(); // remove last element to avoid overflow
                     coordinates = list.join('~');
                     valuesChart = `${ticksAndLabels}~${coordinates}`;
 

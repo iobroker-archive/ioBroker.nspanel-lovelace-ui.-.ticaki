@@ -68,7 +68,7 @@ class PageChartLine extends import_pageChart.PageChart {
           let coordinates = "";
           const ticksAndLabelsList = [];
           const date = /* @__PURE__ */ new Date();
-          date.setMinutes(0, 0, 0);
+          date.setSeconds(0, 0);
           const ts = Math.round(date.getTime() / 1e3);
           const tsYesterday = ts - hoursRangeFromNow * 3600;
           for (let x = tsYesterday, i = 0; x < ts; x += xAxisTicksInterval * 60, i += xAxisTicksInterval) {
@@ -82,6 +82,7 @@ class PageChartLine extends import_pageChart.PageChart {
               ticksAndLabelsList.push(`${String(i)}^${formattedTime}`);
             }
           }
+          ticksAndLabelsList.push(String(maxX));
           ticksAndLabels = ticksAndLabelsList.join("+");
           const list = [];
           const offSetTime = Math.round(dbDaten[0].ts / 1e3);
@@ -95,6 +96,7 @@ class PageChartLine extends import_pageChart.PageChart {
               tempScale.push(value);
             }
           }
+          list.pop();
           coordinates = list.join("~");
           valuesChart = `${ticksAndLabels}~${coordinates}`;
           this.log.debug(`Ticks & Label: ${ticksAndLabels}`);
